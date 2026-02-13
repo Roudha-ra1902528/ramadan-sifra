@@ -130,6 +130,33 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .paste-btn {
+            background: rgba(212, 175, 55, 0.2);
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 0 auto;
+        }
+
+        .paste-btn:active {
+            transform: scale(0.95);
+            background: rgba(212, 175, 55, 0.3);
+        }
+
+        .paste-btn svg {
+            stroke: var(--gold);
         }
 
         .sifra-container {
@@ -929,6 +956,99 @@
             backdrop-filter: blur(10px);
         }
 
+        /* Clipboard Banner */
+        .clipboard-banner {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            transition: top 0.3s ease;
+            border: 2px solid var(--gold);
+        }
+
+        .clipboard-banner.show {
+            top: 20px;
+        }
+
+        .clipboard-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px 20px 15px;
+        }
+
+        .clipboard-banner-icon {
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .clipboard-banner-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .clipboard-banner-title {
+            font-weight: 700;
+            color: var(--deep-blue);
+            font-size: 1.05rem;
+            margin-bottom: 5px;
+        }
+
+        .clipboard-banner-link {
+            font-size: 0.85rem;
+            color: var(--sage);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .clipboard-banner-actions {
+            display: flex;
+            gap: 10px;
+            padding: 0 20px 20px;
+        }
+
+        .clipboard-btn-add {
+            flex: 1;
+            background: var(--gold);
+            color: var(--deep-blue);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clipboard-btn-add:active {
+            transform: scale(0.95);
+        }
+
+        .clipboard-btn-dismiss {
+            background: var(--sand);
+            color: var(--navy);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .clipboard-btn-dismiss:active {
+            transform: scale(0.95);
+        }
+
         .storage-info {
             display: flex;
             justify-content: center;
@@ -990,6 +1110,13 @@
                         <span>|</span>
                         <span id="ramadanDay">Day 1</span>
                     </div>
+                    <button class="paste-btn" onclick="pasteFromClipboard()" title="Paste recipe link">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                        </svg>
+                        Paste
+                    </button>
                 </div>
             </header>
 
@@ -1287,47 +1414,93 @@
                 }, 500);
             } else {
                 console.log('No shared URL found');
-                
-                // Check clipboard for recipe links
-                checkClipboardForRecipe();
             }
         });
 
-        async function checkClipboardForRecipe() {
-            // Only check clipboard if user hasn't interacted yet (on fresh page load)
+        async function pasteFromClipboard() {
             try {
-                // Check if Clipboard API is available
-                if (!navigator.clipboard || !navigator.clipboard.readText) {
-                    console.log('Clipboard API not available');
+                // Request clipboard permission and read
+                const clipboardText = await navigator.clipboard.readText();
+                console.log('Clipboard:', clipboardText);
+
+                if (!clipboardText || clipboardText.trim().length === 0) {
+                    alert('📋 Clipboard is empty!\n\nCopy a recipe link first, then tap Paste.');
                     return;
                 }
 
-                // Read clipboard
-                const clipboardText = await navigator.clipboard.readText();
-                console.log('Clipboard content:', clipboardText);
+                const trimmedText = clipboardText.trim();
+                
+                // Check if it looks like a URL
+                const isURL = 
+                    trimmedText.startsWith('http://') || 
+                    trimmedText.startsWith('https://') ||
+                    trimmedText.includes('youtube.com') ||
+                    trimmedText.includes('youtu.be') ||
+                    trimmedText.includes('tiktok.com') ||
+                    trimmedText.includes('instagram.com');
 
-                // Check if it's a recipe link (YouTube, TikTok, Instagram, or valid URL)
-                if (clipboardText && clipboardText.length > 0) {
-                    const isRecipeLink = 
-                        clipboardText.includes('youtube.com') ||
-                        clipboardText.includes('youtu.be') ||
-                        clipboardText.includes('tiktok.com') ||
-                        clipboardText.includes('instagram.com') ||
-                        clipboardText.startsWith('http://') ||
-                        clipboardText.startsWith('https://');
-
-                    if (isRecipeLink) {
-                        console.log('✓ Recipe link found in clipboard!');
-                        
-                        // Show notification
-                        if (confirm('📋 Recipe link detected in clipboard!\n\nDo you want to add this recipe?\n\n' + clipboardText.substring(0, 50) + '...')) {
-                            openAddDishWithUrl(clipboardText.trim());
-                        }
-                    }
+                if (isURL) {
+                    // Show banner
+                    showClipboardNotification(trimmedText);
+                } else {
+                    alert('📋 Not a valid link!\n\nPlease copy a recipe URL first.\n\nSupported: YouTube, TikTok, Instagram, or any recipe website.');
                 }
             } catch (error) {
-                // Clipboard access denied or not available - this is normal on first visit
-                console.log('Clipboard check skipped:', error.message);
+                console.error('Clipboard error:', error);
+                
+                if (error.name === 'NotAllowedError') {
+                    alert('📋 Clipboard access denied!\n\niOS Settings:\n1. Go to Settings\n2. Find your browser/app\n3. Enable "Paste from Other Apps"');
+                } else {
+                    alert('📋 Could not read clipboard.\n\nMake sure you copied a link first!');
+                }
+            }
+        }
+
+        function showClipboardNotification(link) {
+            // Create notification banner
+            const banner = document.createElement('div');
+            banner.className = 'clipboard-banner';
+            banner.innerHTML = `
+                <div class="clipboard-banner-content">
+                    <div class="clipboard-banner-icon">📋</div>
+                    <div class="clipboard-banner-text">
+                        <div class="clipboard-banner-title">Recipe Link Detected!</div>
+                        <div class="clipboard-banner-link">${link.substring(0, 40)}...</div>
+                    </div>
+                </div>
+                <div class="clipboard-banner-actions">
+                    <button class="clipboard-btn-add" onclick="addFromClipboard('${link.replace(/'/g, "\\'")}')">
+                        Add Recipe
+                    </button>
+                    <button class="clipboard-btn-dismiss" onclick="dismissClipboard()">
+                        Dismiss
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(banner);
+            
+            // Animate in
+            setTimeout(() => {
+                banner.classList.add('show');
+            }, 100);
+            
+            // Store for later use
+            window.clipboardLink = link;
+        }
+
+        function addFromClipboard(link) {
+            dismissClipboard();
+            openAddDishWithUrl(link);
+        }
+
+        function dismissClipboard() {
+            const banner = document.querySelector('.clipboard-banner');
+            if (banner) {
+                banner.classList.remove('show');
+                setTimeout(() => {
+                    banner.remove();
+                }, 300);
             }
         }
 
