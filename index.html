@@ -1424,7 +1424,7 @@
                 console.log('Clipboard:', clipboardText);
 
                 if (!clipboardText || clipboardText.trim().length === 0) {
-                    alert('📋 Clipboard is empty!\n\nCopy a recipe link first, then tap Paste.');
+                    alert('📋 Clipboard is empty! Copy a recipe link first.');
                     return;
                 }
 
@@ -1440,67 +1440,14 @@
                     trimmedText.includes('instagram.com');
 
                 if (isURL) {
-                    // Show banner
-                    showClipboardNotification(trimmedText);
+                    // Directly open form with the link - no confirmation!
+                    openAddDishWithUrl(trimmedText);
                 } else {
-                    alert('📋 Not a valid link!\n\nPlease copy a recipe URL first.\n\nSupported: YouTube, TikTok, Instagram, or any recipe website.');
+                    alert('📋 Not a valid link! Please copy a recipe URL first.');
                 }
             } catch (error) {
                 console.error('Clipboard error:', error);
-                
-                if (error.name === 'NotAllowedError') {
-                    alert('📋 Clipboard access denied!\n\niOS Settings:\n1. Go to Settings\n2. Find your browser/app\n3. Enable "Paste from Other Apps"');
-                } else {
-                    alert('📋 Could not read clipboard.\n\nMake sure you copied a link first!');
-                }
-            }
-        }
-
-        function showClipboardNotification(link) {
-            // Create notification banner
-            const banner = document.createElement('div');
-            banner.className = 'clipboard-banner';
-            banner.innerHTML = `
-                <div class="clipboard-banner-content">
-                    <div class="clipboard-banner-icon">📋</div>
-                    <div class="clipboard-banner-text">
-                        <div class="clipboard-banner-title">Recipe Link Detected!</div>
-                        <div class="clipboard-banner-link">${link.substring(0, 40)}...</div>
-                    </div>
-                </div>
-                <div class="clipboard-banner-actions">
-                    <button class="clipboard-btn-add" onclick="addFromClipboard('${link.replace(/'/g, "\\'")}')">
-                        Add Recipe
-                    </button>
-                    <button class="clipboard-btn-dismiss" onclick="dismissClipboard()">
-                        Dismiss
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(banner);
-            
-            // Animate in
-            setTimeout(() => {
-                banner.classList.add('show');
-            }, 100);
-            
-            // Store for later use
-            window.clipboardLink = link;
-        }
-
-        function addFromClipboard(link) {
-            dismissClipboard();
-            openAddDishWithUrl(link);
-        }
-
-        function dismissClipboard() {
-            const banner = document.querySelector('.clipboard-banner');
-            if (banner) {
-                banner.classList.remove('show');
-                setTimeout(() => {
-                    banner.remove();
-                }, 300);
+                alert('📋 Could not read clipboard. Make sure you copied a link first!');
             }
         }
 
