@@ -1159,19 +1159,6 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Recipe Link <span class="required">*</span></label>
-                    <input 
-                        type="url" 
-                        class="form-input" 
-                        id="dishLink" 
-                        placeholder="YouTube, TikTok, Instagram, or website link..."
-                        onblur="fetchDishInfo()"
-                        required
-                    >
-                    <div id="fetchStatus"></div>
-                </div>
-
-                <div class="form-group">
                     <label class="form-label">Dish Title <span class="required">*</span></label>
                     <input 
                         type="text" 
@@ -1180,6 +1167,18 @@
                         placeholder="e.g., Chicken Biryani"
                         required
                     >
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Recipe Link (Optional)</label>
+                    <input 
+                        type="url" 
+                        class="form-input" 
+                        id="dishLink" 
+                        placeholder="YouTube, TikTok, Instagram, or website link..."
+                        onblur="fetchDishInfo()"
+                    >
+                    <div id="fetchStatus"></div>
                 </div>
 
                 <div class="form-group">
@@ -1444,16 +1443,18 @@
                 <span class="dish-details-category">${getCategoryName(dish.category)}</span>
             `;
 
-            // Recipe Link Button (MOST PROMINENT)
-            html += `
-                <a href="${dish.link}" target="_blank" class="recipe-link-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                    </svg>
-                    Open Recipe
-                </a>
-            `;
+            // Recipe Link Button (only if link exists)
+            if (dish.link) {
+                html += `
+                    <a href="${dish.link}" target="_blank" class="recipe-link-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        Open Recipe
+                    </a>
+                `;
+            }
 
             // Description
             if (dish.description) {
@@ -1579,8 +1580,8 @@
             const dish = {
                 id: Date.now().toString(),
                 category: document.getElementById('dishCategory').value,
-                link: document.getElementById('dishLink').value,
                 title: document.getElementById('dishTitle').value,
+                link: document.getElementById('dishLink').value || null,
                 description: document.getElementById('dishDescription').value,
                 recipe: document.getElementById('dishRecipe').value
             };
@@ -1771,16 +1772,18 @@
                 <span class="dish-details-category">${getCategoryName(dish.category)}</span>
             `;
 
-            // Recipe Link Button
-            html += `
-                <a href="${dish.link}" target="_blank" class="recipe-link-btn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                    </svg>
-                    Open Recipe
-                </a>
-            `;
+            // Recipe Link Button (only if link exists)
+            if (dish.link) {
+                html += `
+                    <a href="${dish.link}" target="_blank" class="recipe-link-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                        </svg>
+                        Open Recipe
+                    </a>
+                `;
+            }
 
             // Description
             if (dish.description) {
@@ -1893,7 +1896,10 @@
                         if (dish.description) {
                             message += `   ${dish.description}\n`;
                         }
-                        message += `   🔗 ${dish.link}\n\n`;
+                        if (dish.link) {
+                            message += `   🔗 ${dish.link}\n`;
+                        }
+                        message += `\n`;
                     }
                 }
             });
