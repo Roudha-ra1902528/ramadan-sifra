@@ -1287,8 +1287,49 @@
                 }, 500);
             } else {
                 console.log('No shared URL found');
+                
+                // Check clipboard for recipe links
+                checkClipboardForRecipe();
             }
         });
+
+        async function checkClipboardForRecipe() {
+            // Only check clipboard if user hasn't interacted yet (on fresh page load)
+            try {
+                // Check if Clipboard API is available
+                if (!navigator.clipboard || !navigator.clipboard.readText) {
+                    console.log('Clipboard API not available');
+                    return;
+                }
+
+                // Read clipboard
+                const clipboardText = await navigator.clipboard.readText();
+                console.log('Clipboard content:', clipboardText);
+
+                // Check if it's a recipe link (YouTube, TikTok, Instagram, or valid URL)
+                if (clipboardText && clipboardText.length > 0) {
+                    const isRecipeLink = 
+                        clipboardText.includes('youtube.com') ||
+                        clipboardText.includes('youtu.be') ||
+                        clipboardText.includes('tiktok.com') ||
+                        clipboardText.includes('instagram.com') ||
+                        clipboardText.startsWith('http://') ||
+                        clipboardText.startsWith('https://');
+
+                    if (isRecipeLink) {
+                        console.log('✓ Recipe link found in clipboard!');
+                        
+                        // Show notification
+                        if (confirm('📋 Recipe link detected in clipboard!\n\nDo you want to add this recipe?\n\n' + clipboardText.substring(0, 50) + '...')) {
+                            openAddDishWithUrl(clipboardText.trim());
+                        }
+                    }
+                }
+            } catch (error) {
+                // Clipboard access denied or not available - this is normal on first visit
+                console.log('Clipboard check skipped:', error.message);
+            }
+        }
 
         function updateDate() {
             const ramadanDate = getDateForRamadanDay(currentDay);
