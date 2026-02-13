@@ -708,70 +708,332 @@
             background: var(--gold-light);
             color: var(--deep-blue);
         }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+            border-top: 2px solid var(--gold-light);
+            box-shadow: 0 -4px 20px var(--shadow);
+            z-index: 999;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            max-width: 120px;
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            opacity: 0.5;
+            transition: all 0.2s;
+        }
+
+        .nav-label {
+            font-size: 0.75rem;
+            color: var(--sage);
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active .nav-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--gold);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Calendar View */
+        .calendar-view-container {
+            padding: 20px;
+        }
+
+        /* Recipes Tab */
+        .recipes-container {
+            padding: 20px;
+        }
+
+        .recipe-filters {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .recipe-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 2px solid var(--sand);
+            color: var(--navy);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .filter-btn.active {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--deep-blue);
+        }
+
+        .filter-btn:active {
+            transform: scale(0.95);
+        }
+
+        .recipe-list {
+            display: grid;
+            gap: 15px;
+        }
+
+        .recipe-card {
+            background: white;
+            border: 2px solid var(--gold-light);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .recipe-card:active {
+            transform: scale(0.98);
+            border-color: var(--gold);
+        }
+
+        .recipe-card-image {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .recipe-card-placeholder {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: var(--sand);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .recipe-card-info {
+            flex: 1;
+        }
+
+        .recipe-card-category {
+            display: inline-block;
+            background: var(--gold-light);
+            color: var(--deep-blue);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .recipe-card-name {
+            font-weight: 600;
+            color: var(--deep-blue);
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+
+        .recipe-card-desc {
+            font-size: 0.85rem;
+            color: var(--sage);
+            line-height: 1.3;
+        }
+
+        .recipe-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--sage);
+        }
+
+        .recipe-empty-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Floating Action Button - adjust for bottom nav */
+        .floating-action {
+            bottom: 90px;
+        }
     </style>
 </head>
 <body>
     <div class="islamic-pattern"></div>
     
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1>سفرة رمضان</h1>
-                <div class="date-display">
-                    <span id="currentDate"></span>
-                    <span>|</span>
-                    <span id="ramadanDay">Day 1</span>
+    <!-- Tab Contents -->
+    <div id="homeTab" class="tab-content active">
+        <div class="container">
+            <header>
+                <div class="header-content">
+                    <h1>سفرة رمضان</h1>
+                    <div class="date-display">
+                        <span id="currentDate"></span>
+                        <span>|</span>
+                        <span id="ramadanDay">Day 1</span>
+                    </div>
+                    <button class="calendar-btn" onclick="openCalendar()">📅 View Calendar</button>
                 </div>
-                <button class="calendar-btn" onclick="openCalendar()">📅 View Calendar</button>
-            </div>
-        </header>
+            </header>
 
-        <div class="sifra-container">
-            <div class="sifra-board">
-                <div class="dish-slots">
-                    <!-- Main Dish (Center) -->
-                    <div class="center-dish">
-                        <div class="dish-slot center" data-category="main" onclick="openDishSelector('main')">
-                            <div class="dish-icon">🍲</div>
-                            <div class="dish-label">Main Dish</div>
-                            <div class="dish-placeholder">Tap to select</div>
+            <div class="sifra-container">
+                <div class="sifra-board">
+                    <div class="dish-slots">
+                        <!-- Main Dish (Center) -->
+                        <div class="center-dish">
+                            <div class="dish-slot center" data-category="main" onclick="openDishSelector('main')">
+                                <div class="dish-icon">🍲</div>
+                                <div class="dish-label">Main Dish</div>
+                                <div class="dish-placeholder">Tap to select</div>
+                            </div>
+                        </div>
+
+                        <!-- Side Dishes Grid -->
+                        <div class="side-dishes">
+                            <div class="dish-slot" data-category="side" onclick="openDishSelector('side')">
+                                <div class="dish-icon">🥙</div>
+                                <div class="dish-label">Side Dish</div>
+                                <div class="dish-placeholder">Tap to select</div>
+                            </div>
+
+                            <div class="dish-slot" data-category="soup" onclick="openDishSelector('soup')">
+                                <div class="dish-icon">🍜</div>
+                                <div class="dish-label">Soup</div>
+                                <div class="dish-placeholder">Tap to select</div>
+                            </div>
+
+                            <div class="dish-slot" data-category="salad" onclick="openDishSelector('salad')">
+                                <div class="dish-icon">🥗</div>
+                                <div class="dish-label">Salad</div>
+                                <div class="dish-placeholder">Tap to select</div>
+                            </div>
+
+                            <div class="dish-slot" data-category="dessert" onclick="openDishSelector('dessert')">
+                                <div class="dish-icon">🍰</div>
+                                <div class="dish-label">Dessert</div>
+                                <div class="dish-placeholder">Tap to select</div>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Side Dishes Grid -->
-                    <div class="side-dishes">
-                        <div class="dish-slot" data-category="side" onclick="openDishSelector('side')">
-                            <div class="dish-icon">🥙</div>
-                            <div class="dish-label">Side Dish</div>
-                            <div class="dish-placeholder">Tap to select</div>
-                        </div>
-
-                        <div class="dish-slot" data-category="soup" onclick="openDishSelector('soup')">
-                            <div class="dish-icon">🍜</div>
-                            <div class="dish-label">Soup</div>
-                            <div class="dish-placeholder">Tap to select</div>
-                        </div>
-
-                        <div class="dish-slot" data-category="salad" onclick="openDishSelector('salad')">
-                            <div class="dish-icon">🥗</div>
-                            <div class="dish-label">Salad</div>
-                            <div class="dish-placeholder">Tap to select</div>
-                        </div>
-
-                        <div class="dish-slot" data-category="dessert" onclick="openDishSelector('dessert')">
-                            <div class="dish-icon">🍰</div>
-                            <div class="dish-label">Dessert</div>
-                            <div class="dish-placeholder">Tap to select</div>
-                        </div>
-                    </div>
                 </div>
             </div>
+
+            <button class="floating-action" onclick="openAddDish()" title="Add New Dish">+</button>
         </div>
-
-        <button class="floating-action" onclick="openAddDish()" title="Add New Dish">+</button>
     </div>
 
-    <!-- Dish Selector Modal -->
+    <!-- Calendar Tab Content -->
+    <div id="calendarTab" class="tab-content">
+        <div class="container">
+            <header>
+                <div class="header-content">
+                    <h1>Ramadan Calendar</h1>
+                    <div class="date-display">30 Days of Planning</div>
+                </div>
+            </header>
+            <div class="calendar-view-container">
+                <div class="calendar-grid" id="calendarGridMain"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recipes Tab Content -->
+    <div id="recipesTab" class="tab-content">
+        <div class="container">
+            <header>
+                <div class="header-content">
+                    <h1>My Recipes</h1>
+                    <div class="date-display" id="recipeCount">0 recipes</div>
+                </div>
+            </header>
+            <div class="recipes-container">
+                <!-- Category Filters -->
+                <div class="recipe-filters">
+                    <button class="filter-btn active" onclick="filterRecipes('all')">All</button>
+                    <button class="filter-btn" onclick="filterRecipes('main')">Main</button>
+                    <button class="filter-btn" onclick="filterRecipes('side')">Side</button>
+                    <button class="filter-btn" onclick="filterRecipes('soup')">Soup</button>
+                    <button class="filter-btn" onclick="filterRecipes('salad')">Salad</button>
+                    <button class="filter-btn" onclick="filterRecipes('dessert')">Dessert</button>
+                </div>
+                
+                <!-- Recipe List -->
+                <div class="recipe-list" id="recipeList"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="switchTab('home')" id="nav-home">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('calendar')" id="nav-calendar">
+            <span class="nav-icon">📅</span>
+            <span class="nav-label">Calendar</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('recipes')" id="nav-recipes">
+            <span class="nav-icon">📖</span>
+            <span class="nav-label">Recipes</span>
+        </button>
+    </nav>
+
+    <!-- Home Tab Content -->
     <div id="dishSelectorModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -793,8 +1055,7 @@
                 <div class="form-group">
                     <label class="form-label">Category <span class="required">*</span></label>
                     <select class="form-select" id="dishCategory" required>
-                        <option value="">Select category...</option>
-                        <option value="main">Main Dish</option>
+                        <option value="main" selected>Main Dish</option>
                         <option value="side">Side Dish</option>
                         <option value="soup">Soup</option>
                         <option value="salad">Salad</option>
@@ -896,23 +1157,30 @@
             const urlParams = new URLSearchParams(window.location.search);
             const sharedUrl = urlParams.get('url') || urlParams.get('link') || urlParams.get('text');
             
+            console.log('Page loaded. Checking for shared URL...');
+            console.log('URL params:', window.location.search);
+            console.log('Shared URL:', sharedUrl);
+            
             if (sharedUrl) {
-                console.log('Shared URL detected:', sharedUrl);
+                console.log('✓ Shared URL detected:', sharedUrl);
+                
+                // Show a temporary alert to confirm detection
+                alert('Link detected! Opening Add Dish form...');
+                
+                // Decode the URL
+                const decodedUrl = decodeURIComponent(sharedUrl);
+                console.log('Decoded URL:', decodedUrl);
+                
                 // Auto-open Add Dish modal with pre-filled URL
                 setTimeout(() => {
-                    openAddDish();
-                    const decodedUrl = decodeURIComponent(sharedUrl);
-                    console.log('Decoded URL:', decodedUrl);
-                    document.getElementById('dishLink').value = decodedUrl;
-                    
-                    // Trigger auto-fetch
-                    setTimeout(() => {
-                        fetchDishInfo();
-                    }, 100);
+                    console.log('Opening Add Dish modal with URL...');
+                    openAddDishWithUrl(decodedUrl);
                     
                     // Clean up URL
                     window.history.replaceState({}, document.title, window.location.pathname);
-                }, 500);
+                }, 800);
+            } else {
+                console.log('No shared URL found');
             }
         });
 
@@ -1124,6 +1392,25 @@
             document.getElementById('addDishModal').classList.add('active');
         }
 
+        function openAddDishWithUrl(url) {
+            // First open the modal
+            document.getElementById('imagePreview').style.display = 'none';
+            document.getElementById('uploadText').style.display = 'block';
+            document.getElementById('fetchStatus').innerHTML = '';
+            document.getElementById('addDishModal').classList.add('active');
+            
+            // Then fill in the URL (don't reset the form)
+            setTimeout(() => {
+                document.getElementById('dishLink').value = url;
+                console.log('✓ URL filled in field:', url);
+                
+                // Trigger auto-fetch
+                setTimeout(() => {
+                    fetchDishInfo();
+                }, 300);
+            }, 100);
+        }
+
         async function fetchDishInfo() {
             const url = document.getElementById('dishLink').value;
             if (!url) return;
@@ -1240,6 +1527,200 @@
 
         function closeModal(modalId) {
             document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remove active from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            document.getElementById('nav-' + tabName).classList.add('active');
+
+            // Load content for specific tabs
+            if (tabName === 'calendar') {
+                generateCalendarMain();
+            } else if (tabName === 'recipes') {
+                loadRecipesList();
+            }
+        }
+
+        // Recipe Filtering
+        let currentFilter = 'all';
+
+        function filterRecipes(category) {
+            currentFilter = category;
+
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Reload recipe list with filter
+            loadRecipesList();
+        }
+
+        function loadRecipesList() {
+            const recipeList = document.getElementById('recipeList');
+            const recipeCount = document.getElementById('recipeCount');
+
+            let filteredDishes = dishes;
+            if (currentFilter !== 'all') {
+                filteredDishes = dishes.filter(d => d.category === currentFilter);
+            }
+
+            // Update count
+            recipeCount.textContent = `${filteredDishes.length} recipe${filteredDishes.length !== 1 ? 's' : ''}`;
+
+            if (filteredDishes.length === 0) {
+                recipeList.innerHTML = `
+                    <div class="recipe-empty">
+                        <div class="recipe-empty-icon">🍽️</div>
+                        <p>No recipes ${currentFilter !== 'all' ? 'in this category' : 'added'} yet.</p>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">Tap the + button to add your first recipe!</p>
+                    </div>
+                `;
+            } else {
+                recipeList.innerHTML = filteredDishes.map(dish => `
+                    <div class="recipe-card" onclick="viewRecipeDetails('${dish.id}')">
+                        ${dish.image 
+                            ? `<img src="${dish.image}" class="recipe-card-image" alt="${dish.title}">`
+                            : `<div class="recipe-card-placeholder">${getCategoryIcon(dish.category)}</div>`
+                        }
+                        <div class="recipe-card-info">
+                            <span class="recipe-card-category">${getCategoryName(dish.category)}</span>
+                            <div class="recipe-card-name">${dish.title}</div>
+                            ${dish.description 
+                                ? `<div class="recipe-card-desc">${dish.description}</div>`
+                                : ''
+                            }
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function viewRecipeDetails(dishId) {
+            const dish = dishes.find(d => d.id === dishId);
+            if (!dish) return;
+
+            const modal = document.getElementById('dishDetailsModal');
+            const content = document.getElementById('dishDetailsContent');
+
+            let html = '';
+
+            // Image
+            if (dish.image) {
+                html += `<img src="${dish.image}" class="dish-details-image" alt="${dish.title}">`;
+            }
+
+            // Title and Category
+            html += `
+                <h3 class="dish-details-title">${dish.title}</h3>
+                <span class="dish-details-category">${getCategoryName(dish.category)}</span>
+            `;
+
+            // Recipe Link Button
+            html += `
+                <a href="${dish.link}" target="_blank" class="recipe-link-btn">
+                    🔗 Open Recipe
+                </a>
+            `;
+
+            // Description
+            if (dish.description) {
+                html += `
+                    <div class="dish-details-section">
+                        <div class="dish-details-label">Description</div>
+                        <div class="dish-details-text">${dish.description}</div>
+                    </div>
+                `;
+            }
+
+            // Recipe Details
+            if (dish.recipe) {
+                html += `
+                    <div class="dish-details-section">
+                        <div class="dish-details-label">Recipe</div>
+                        <div class="dish-details-text">${dish.recipe}</div>
+                    </div>
+                `;
+            }
+
+            // Edit/Delete buttons for recipe view
+            html += `
+                <div class="action-buttons">
+                    <button class="btn-change" onclick="editRecipe('${dish.id}')">
+                        ✏️ Edit Recipe
+                    </button>
+                </div>
+                <div class="action-buttons" style="margin-top: 10px;">
+                    <button class="btn-change" style="background: var(--burgundy);" onclick="deleteRecipe('${dish.id}')">
+                        🗑️ Delete Recipe
+                    </button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function editRecipe(dishId) {
+            // TODO: Implement edit functionality
+            alert('Edit feature coming soon!');
+        }
+
+        function deleteRecipe(dishId) {
+            if (confirm('Are you sure you want to delete this recipe?')) {
+                dishes = dishes.filter(d => d.id !== dishId);
+                localStorage.setItem('ramadan_dishes', JSON.stringify(dishes));
+                
+                // Remove from any plans
+                Object.keys(dailyPlans).forEach(day => {
+                    Object.keys(dailyPlans[day]).forEach(category => {
+                        if (dailyPlans[day][category] === dishId) {
+                            delete dailyPlans[day][category];
+                        }
+                    });
+                });
+                localStorage.setItem('ramadan_plans', JSON.stringify(dailyPlans));
+                
+                closeModal('dishDetailsModal');
+                loadRecipesList();
+                loadDayPlan(currentDay);
+                alert('Recipe deleted!');
+            }
+        }
+
+        function generateCalendarMain() {
+            const grid = document.getElementById('calendarGridMain');
+            grid.innerHTML = '';
+            
+            for (let i = 1; i <= 30; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                if (i === currentDay) day.classList.add('today');
+                if (dailyPlans[i] && Object.keys(dailyPlans[i]).length > 0) {
+                    day.classList.add('has-plan');
+                }
+                
+                day.innerHTML = `<div class="calendar-day-number">${i}</div>`;
+                day.onclick = () => {
+                    loadDayPlan(i);
+                    switchTab('home');
+                };
+                
+                grid.appendChild(day);
+            }
         }
 
         // Close modal when clicking outside
