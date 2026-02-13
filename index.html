@@ -167,6 +167,37 @@
             border: 3px solid var(--gold);
         }
 
+        .board-header {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+        }
+
+        .share-plan-btn {
+            background: white;
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+        }
+
+        .share-plan-btn:active {
+            transform: scale(0.9);
+            background: var(--gold-light);
+        }
+
+        .share-plan-btn svg {
+            stroke: var(--gold);
+        }
+
         .sifra-board::before {
             content: '';
             position: absolute;
@@ -475,32 +506,6 @@
         .form-textarea {
             resize: vertical;
             min-height: 80px;
-        }
-
-        .image-upload {
-            border: 2px dashed var(--gold-light);
-            border-radius: 12px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--cream);
-        }
-
-        .image-upload:hover {
-            border-color: var(--gold);
-            background: var(--gold-light);
-        }
-
-        .image-upload input {
-            display: none;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 12px;
-            margin-top: 15px;
         }
 
         .btn-primary {
@@ -933,6 +938,61 @@
         .floating-action {
             bottom: 90px;
         }
+
+        /* Storage Meter */
+        .storage-meter {
+            margin-top: 15px;
+            padding: 12px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .storage-info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: var(--gold-light);
+        }
+
+        .storage-used {
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        .storage-separator {
+            opacity: 0.5;
+        }
+
+        .storage-total {
+            opacity: 0.7;
+        }
+
+        .storage-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .storage-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), var(--gold-light));
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+
+        .storage-bar-fill.warning {
+            background: linear-gradient(90deg, #f39c12, #f1c40f);
+        }
+
+        .storage-bar-fill.danger {
+            background: linear-gradient(90deg, #e74c3c, #c0392b);
+        }
     </style>
 </head>
 <body>
@@ -955,6 +1015,17 @@
 
             <div class="sifra-container">
                 <div class="sifra-board">
+                    <div class="board-header">
+                        <button class="share-plan-btn" onclick="shareDayPlan()" title="Share this day's plan">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </button>
+                    </div>
                     <div class="dish-slots">
                         <!-- Main Dish (Center) -->
                         <div class="center-dish">
@@ -1021,6 +1092,16 @@
                 <div class="header-content">
                     <h1>My Recipes</h1>
                     <div class="date-display" id="recipeCount">0 recipes</div>
+                    <div class="storage-meter" id="storageMeter">
+                        <div class="storage-info">
+                            <span class="storage-used">0 KB</span>
+                            <span class="storage-separator">/</span>
+                            <span class="storage-total">10 MB</span>
+                        </div>
+                        <div class="storage-bar">
+                            <div class="storage-bar-fill" id="storageBarFill" style="width: 0%"></div>
+                        </div>
+                    </div>
                 </div>
             </header>
             <div class="recipes-container">
@@ -1137,15 +1218,6 @@
                         id="dishRecipe" 
                         placeholder="Ingredients and instructions..."
                     ></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Dish Photo (Optional)</label>
-                    <div class="image-upload" onclick="document.getElementById('dishImage').click()">
-                        <input type="file" id="dishImage" accept="image/*" onchange="previewImage(event)">
-                        <div id="uploadText">📷 Tap to upload image</div>
-                        <img id="imagePreview" class="image-preview" style="display: none;">
-                    </div>
                 </div>
 
                 <button type="submit" class="btn-primary">Save Dish</button>
@@ -1447,16 +1519,12 @@
 
         function openAddDish() {
             document.getElementById('addDishForm').reset();
-            document.getElementById('imagePreview').style.display = 'none';
-            document.getElementById('uploadText').style.display = 'block';
             document.getElementById('fetchStatus').innerHTML = '';
             document.getElementById('addDishModal').classList.add('active');
         }
 
         function openAddDishWithUrl(url) {
             // First open the modal
-            document.getElementById('imagePreview').style.display = 'none';
-            document.getElementById('uploadText').style.display = 'block';
             document.getElementById('fetchStatus').innerHTML = '';
             document.getElementById('addDishModal').classList.add('active');
             
@@ -1525,19 +1593,6 @@
             return (match && match[7].length === 11) ? match[7] : null;
         }
 
-        function previewImage(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('imagePreview').src = e.target.result;
-                    document.getElementById('imagePreview').style.display = 'block';
-                    document.getElementById('uploadText').style.display = 'none';
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
         function saveDish(event) {
             event.preventDefault();
             
@@ -1547,8 +1602,7 @@
                 link: document.getElementById('dishLink').value,
                 title: document.getElementById('dishTitle').value,
                 description: document.getElementById('dishDescription').value,
-                recipe: document.getElementById('dishRecipe').value,
-                image: document.getElementById('imagePreview').src || null
+                recipe: document.getElementById('dishRecipe').value
             };
 
             dishes.push(dish);
@@ -1642,6 +1696,9 @@
             // Update count
             recipeCount.textContent = `${filteredDishes.length} recipe${filteredDishes.length !== 1 ? 's' : ''}`;
 
+            // Update storage meter
+            updateStorageMeter();
+
             if (filteredDishes.length === 0) {
                 recipeList.innerHTML = `
                     <div class="recipe-empty">
@@ -1667,6 +1724,50 @@
                         </div>
                     </div>
                 `).join('');
+            }
+        }
+
+        function updateStorageMeter() {
+            // Calculate storage used by localStorage
+            let totalSize = 0;
+            
+            // Calculate size of dishes
+            const dishesStr = JSON.stringify(dishes);
+            totalSize += new Blob([dishesStr]).size;
+            
+            // Calculate size of daily plans
+            const plansStr = JSON.stringify(dailyPlans);
+            totalSize += new Blob([plansStr]).size;
+            
+            // Convert to appropriate unit
+            let sizeDisplay, unit;
+            if (totalSize < 1024) {
+                sizeDisplay = totalSize;
+                unit = 'B';
+            } else if (totalSize < 1024 * 1024) {
+                sizeDisplay = (totalSize / 1024).toFixed(1);
+                unit = 'KB';
+            } else {
+                sizeDisplay = (totalSize / (1024 * 1024)).toFixed(2);
+                unit = 'MB';
+            }
+            
+            // iPhone Safari limit for PWA
+            const totalLimit = 10 * 1024 * 1024; // 10MB
+            const percentage = (totalSize / totalLimit) * 100;
+            
+            // Update display
+            document.querySelector('.storage-used').textContent = `${sizeDisplay} ${unit}`;
+            
+            const barFill = document.getElementById('storageBarFill');
+            barFill.style.width = `${percentage}%`;
+            
+            // Change color based on usage
+            barFill.classList.remove('warning', 'danger');
+            if (percentage > 80) {
+                barFill.classList.add('danger');
+            } else if (percentage > 60) {
+                barFill.classList.add('warning');
             }
         }
 
@@ -1770,6 +1871,92 @@
                 loadDayPlan(currentDay);
                 alert('Recipe deleted!');
             }
+        }
+
+        function shareDayPlan() {
+            const plan = dailyPlans[currentDay] || {};
+            const ramadanDate = getDateForRamadanDay(currentDay);
+            const dateStr = ramadanDate.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+
+            // Check if there's anything planned
+            const plannedCategories = Object.keys(plan);
+            if (plannedCategories.length === 0) {
+                alert('No dishes planned for this day yet! Add some dishes first.');
+                return;
+            }
+
+            // Build the message
+            let message = `🌙 Ramadan Day ${currentDay} Iftar Menu\n`;
+            message += `📅 ${dateStr}\n`;
+            message += `\n━━━━━━━━━━━━━━━━\n\n`;
+
+            const categories = ['main', 'side', 'soup', 'salad', 'dessert'];
+            const icons = {
+                main: '🍲',
+                side: '🥙',
+                soup: '🍜',
+                salad: '🥗',
+                dessert: '🍰'
+            };
+
+            categories.forEach(category => {
+                const dishId = plan[category];
+                if (dishId) {
+                    const dish = dishes.find(d => d.id === dishId);
+                    if (dish) {
+                        message += `${icons[category]} ${getCategoryName(category)}\n`;
+                        message += `   ${dish.title}\n`;
+                        if (dish.description) {
+                            message += `   ${dish.description}\n`;
+                        }
+                        message += `   🔗 ${dish.link}\n\n`;
+                    }
+                }
+            });
+
+            message += `━━━━━━━━━━━━━━━━\n`;
+            message += `Created with Ramadan Sifra App 🌙`;
+
+            // Check if Web Share API is supported (iOS Safari supports this)
+            if (navigator.share) {
+                navigator.share({
+                    title: `Ramadan Day ${currentDay} Menu`,
+                    text: message
+                })
+                .then(() => console.log('Shared successfully'))
+                .catch((error) => {
+                    console.log('Share cancelled or failed:', error);
+                    // Fallback: copy to clipboard
+                    fallbackCopyToClipboard(message);
+                });
+            } else {
+                // Fallback for older browsers: copy to clipboard
+                fallbackCopyToClipboard(message);
+            }
+        }
+
+        function fallbackCopyToClipboard(text) {
+            // Create a temporary textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                alert('✓ Menu copied to clipboard! You can now paste it in WhatsApp or any app.');
+            } catch (err) {
+                alert('Please manually copy the menu text.');
+                console.error('Copy failed:', err);
+            }
+            
+            document.body.removeChild(textarea);
         }
 
         function generateCalendarMain() {
