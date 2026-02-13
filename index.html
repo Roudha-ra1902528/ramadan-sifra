@@ -1165,6 +1165,7 @@
                         class="form-input" 
                         id="dishTitle" 
                         placeholder="e.g., Chicken Biryani"
+                        onkeypress="return event.keyCode !== 13"
                         required
                     >
                 </div>
@@ -1177,6 +1178,7 @@
                         id="dishLink" 
                         placeholder="YouTube, TikTok, Instagram, or website link..."
                         onblur="fetchDishInfo()"
+                        onkeypress="return event.keyCode !== 13"
                     >
                     <div id="fetchStatus"></div>
                 </div>
