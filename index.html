@@ -894,14 +894,22 @@
             
             // Check if URL has a shared link parameter
             const urlParams = new URLSearchParams(window.location.search);
-            const sharedUrl = urlParams.get('url') || urlParams.get('link');
+            const sharedUrl = urlParams.get('url') || urlParams.get('link') || urlParams.get('text');
             
             if (sharedUrl) {
+                console.log('Shared URL detected:', sharedUrl);
                 // Auto-open Add Dish modal with pre-filled URL
                 setTimeout(() => {
                     openAddDish();
-                    document.getElementById('dishLink').value = decodeURIComponent(sharedUrl);
-                    fetchDishInfo();
+                    const decodedUrl = decodeURIComponent(sharedUrl);
+                    console.log('Decoded URL:', decodedUrl);
+                    document.getElementById('dishLink').value = decodedUrl;
+                    
+                    // Trigger auto-fetch
+                    setTimeout(() => {
+                        fetchDishInfo();
+                    }, 100);
+                    
                     // Clean up URL
                     window.history.replaceState({}, document.title, window.location.pathname);
                 }, 500);
