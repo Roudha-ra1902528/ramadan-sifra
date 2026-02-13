@@ -1220,9 +1220,6 @@
             if (sharedUrl) {
                 console.log('✓ Shared URL detected:', sharedUrl);
                 
-                // Show a temporary alert to confirm detection
-                alert('Link detected! Opening Add Dish form...');
-                
                 // Decode the URL
                 const decodedUrl = decodeURIComponent(sharedUrl);
                 console.log('Decoded URL:', decodedUrl);
@@ -1234,7 +1231,7 @@
                     
                     // Clean up URL
                     window.history.replaceState({}, document.title, window.location.pathname);
-                }, 800);
+                }, 500);
             } else {
                 console.log('No shared URL found');
             }
