@@ -545,7 +545,22 @@
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 8px;
+            margin-top: 8px;
+        }
+
+        .calendar-weekday-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
             margin-top: 20px;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--navy);
+            padding: 8px 0;
         }
 
         .calendar-day {
@@ -1187,6 +1202,15 @@
                 </div>
             </header>
             <div class="calendar-view-container">
+                <div class="calendar-weekday-header">
+                    <div class="calendar-weekday">Sun</div>
+                    <div class="calendar-weekday">Mon</div>
+                    <div class="calendar-weekday">Tue</div>
+                    <div class="calendar-weekday">Wed</div>
+                    <div class="calendar-weekday">Thu</div>
+                    <div class="calendar-weekday">Fri</div>
+                    <div class="calendar-weekday">Sat</div>
+                </div>
                 <div class="calendar-grid" id="calendarGridMain"></div>
             </div>
         </div>
@@ -2112,6 +2136,19 @@
             const grid = document.getElementById('calendarGridMain');
             grid.innerHTML = '';
             
+            // Calculate which day of week Ramadan Day 1 falls on
+            const startDate = getDateForRamadanDay(1);
+            const startDayOfWeek = startDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+            
+            // Add empty cells for days before Ramadan starts
+            for (let i = 0; i < startDayOfWeek; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'calendar-day';
+                emptyDay.style.visibility = 'hidden';
+                grid.appendChild(emptyDay);
+            }
+            
+            // Add actual Ramadan days
             for (let i = 1; i <= 30; i++) {
                 const day = document.createElement('div');
                 day.className = 'calendar-day';
